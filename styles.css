@@ -470,3 +470,58 @@ button {
     background: var(--accent-secondary);
     color: #000;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    body {
+        overflow: auto;
+        height: auto;
+        min-height: 100vh;
+    }
+    .app-container {
+        flex-direction: column;
+        height: auto;
+    }
+    .sidebar {
+        width: 100%;
+        max-height: 35vh; /* Keep it constrained so player is visible */
+        border-right: none;
+        border-bottom: 1px solid var(--panel-border);
+    }
+    .main-content {
+        padding: 20px 10px;
+        overflow-y: visible;
+        flex: none;
+    }
+    .view-header h1 {
+        font-size: 1.8rem;
+    }
+    .dj-controls {
+        gap: 10px;
+        padding: 15px 5px;
+    }
+    .control-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+    .play-btn {
+        width: 60px;
+        height: 60px;
+    }
+    .modal-box {
+        width: 90%;
+        max-width: 350px;
+    }
+    .studio-loader {
+        flex-direction: column;
+    }
+    .studio-controls {
+        flex-direction: column;
+        padding: 10px;
+    }
+    .save-group {
+        width: 100%;
+        flex-direction: column;
+    }
+}
