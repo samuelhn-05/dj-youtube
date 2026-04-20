@@ -311,6 +311,27 @@ document.getElementById('btn-export').addEventListener('click', () => {
     dlAnchorElem.click();
 });
 
+document.getElementById('btn-import-url').addEventListener('click', () => {
+    customPrompt("Importar desde URL", "Pega el enlace directo a tu archivo JSON (ej. GitHub Gist RAW):", "", async (url) => {
+        if (!url) return;
+        try {
+            const resp = await fetch(url);
+            const imported = await resp.json();
+            if (imported && imported.playlists) {
+                djData = imported;
+                saveData();
+                saveActivePlaylist(Object.keys(djData.playlists)[0] || "");
+                renderPlaylists();
+                customConfirm("Éxito", "Playlists importadas correctamente desde la web.", () => {});
+            } else {
+                throw new Error("Invalid structure");
+            }
+        } catch (e) {
+            customConfirm("Error", "No se pudo leer la URL. Asegúrate de que apunte a un texto crudo (RAW JSON).", () => {});
+        }
+    });
+});
+
 document.getElementById('import-json').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;

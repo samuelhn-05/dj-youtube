@@ -65,10 +65,15 @@
                 <!-- Tracks of active playlist injected here -->
             </ul>
 
-            <div class="sidebar-footer">
-                <button id="btn-export">Export Data</button>
-                <label for="import-json" class="btn" style="display:inline-block; text-align:center; padding:10px;">Import</label>
-                <input type="file" id="import-json" accept=".json" style="display:none;">
+            <div class="sidebar-footer" style="flex-direction: column;">
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button id="btn-export" style="flex: 1;">Export File</button>
+                    <div class="btn" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center;">
+                        <label for="import-json" style="cursor:pointer;">Import File</label>
+                        <input type="file" id="import-json" accept=".json" style="display: none;">
+                    </div>
+                </div>
+                <button id="btn-import-url" style="margin-top: 10px; width: 100%;">☁️ Import from URL</button>
             </div>
         </aside>
 
