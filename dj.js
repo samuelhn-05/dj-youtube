@@ -102,8 +102,30 @@ playBtn.addEventListener('click', () => {
 document.getElementById('btn-prev').addEventListener('click', () => playPrevTrack());
 document.getElementById('btn-next').addEventListener('click', () => playNextTrack());
 
+const btnFullscreen = document.getElementById('btn-fullscreen');
+if (btnFullscreen) {
+    btnFullscreen.addEventListener('click', () => {
+        const playerWrapper = document.querySelector('.player-wrapper');
+        if (!document.fullscreenElement) {
+            if (playerWrapper.requestFullscreen) {
+                playerWrapper.requestFullscreen();
+            } else if (playerWrapper.webkitRequestFullscreen) { /* Safari */
+                playerWrapper.webkitRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            }
+        }
+    });
+}
+
 function updatePlayBtn() {
-    playBtn.textContent = isPlaying ? "⏸" : "▶️";
+    const playSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+    const pauseSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+    playBtn.innerHTML = isPlaying ? pauseSvg : playSvg;
 }
 
 function loadDjTrack() {
