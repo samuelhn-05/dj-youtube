@@ -55,15 +55,55 @@ button {
     height: 100%;
 }
 
-/* Sidebar */
+/* Sidebar Collapsible Base */
 .sidebar {
-    width: 320px;
-    background: var(--bg-dark);
+    width: 340px;
+    background: rgba(15, 17, 21, 0.95);
     border-right: 1px solid var(--panel-border);
+    backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
     padding: 20px;
-    z-index: 10;
+    z-index: 100;
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+.menu-toggle {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    z-index: 90;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: blur(10px);
+    color: var(--text-main);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.menu-toggle:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.menu-close {
+    background: transparent;
+    color: var(--text-muted);
+    text-align: right;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+.menu-close:hover {
+    color: white;
 }
 
 .sidebar-header h2 {
@@ -226,6 +266,8 @@ button {
 
 .view.active-view {
     display: flex;
+    width: 100%;
+    padding-top: 50px; /* space for toggle button */
 }
 
 @keyframes fadeIn {
@@ -250,7 +292,8 @@ button {
 
 .player-wrapper {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    flex: 1; /* Automatically takes vertical space */
+    min-height: 0; /* Important for flex children */
     padding: 8px;
     margin-bottom: 24px;
     display: flex;
@@ -469,42 +512,6 @@ button {
 .modal-actions .action-btn {
     background: var(--accent-secondary);
     color: #000;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-    body {
-        overflow: auto;
-        height: auto;
-        min-height: 100vh;
-    }
-    .app-container {
-        flex-direction: column;
-        height: auto;
-    }
-    .sidebar {
-        width: 100%;
-        max-height: 35vh; /* Keep it constrained so player is visible */
-        border-right: none;
-        border-bottom: 1px solid var(--panel-border);
-    }
-    .main-content {
-        padding: 20px 10px;
-        overflow-y: visible;
-        flex: none;
-    }
-    .view-header h1 {
-        font-size: 1.8rem;
-    }
-    .dj-controls {
-        gap: 10px;
-        padding: 15px 5px;
-    }
-    .control-btn {
-        width: 45px;
-        height: 45px;
-        font-size: 1.2rem;
-    }
     .play-btn {
         width: 60px;
         height: 60px;

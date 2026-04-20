@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="stylesheet" href="styles.css?v=4">
     <style>
         .page-switch-btn {
             display: inline-block;
@@ -32,8 +32,12 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Floating Menu Button -->
+        <button id="menu-toggle" class="menu-toggle">☰ Menú</button>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
+            <button id="menu-close" class="menu-close">✕ Cerrar</button>
             <div class="sidebar-header">
                 <h2>🎧 DJ Player</h2>
             </div>
@@ -80,5 +84,13 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="data.js"></script>
     <script src="dj.js"></script>
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.add('open');
+        });
+        document.getElementById('menu-close').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.remove('open');
+        });
+    </script>
 </body>
 </html>
