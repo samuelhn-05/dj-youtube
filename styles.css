@@ -1,3 +1,4 @@
+/* 1. VARIABLES & THEMING */
 :root {
     --bg-dark: #0f1115;
     --bg-darker: #090a0c;
@@ -13,6 +14,7 @@
     --success: #66bb6a;
 }
 
+/* 2. GLOBAL RESETS */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -31,7 +33,15 @@ body {
     overflow: hidden;
 }
 
-/* Glassmorphism Classes */
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+/* 3. REUSABLE SYSTEM UTILITIES */
 .glass-panel {
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
@@ -40,22 +50,62 @@ body {
     border-radius: 16px;
 }
 
-button {
-    font-family: 'Outfit', sans-serif;
-    cursor: pointer;
-    border: none;
-    outline: none;
-    transition: all 0.2s ease;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Layout */
+/* 4. MAIN APP STRUCTURE */
 .app-container {
     display: flex;
     width: 100%;
     height: 100%;
 }
 
-/* Sidebar Collapsible Base */
+.main-content {
+    flex: 1;
+    position: relative;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+/* 5. APP VIEWS (STUDIO & PLAYER) */
+.view {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.view.active-view {
+    display: flex;
+    width: 100%;
+    padding-top: 50px; /* Space for the floating toggle button if present */
+}
+
+/* 6. VIEW HEADERS (Side-by-side title feature) */
+.view-header {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.view-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+}
+
+.view-header p {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+/* 7. COLLAPSIBLE SIDEBAR */
 .sidebar {
     width: 340px;
     background: rgba(15, 17, 21, 0.95);
@@ -115,30 +165,7 @@ button {
     -webkit-text-fill-color: transparent;
 }
 
-.mode-toggle {
-    display: flex;
-    gap: 8px;
-    background: rgba(0,0,0,0.2);
-    padding: 6px;
-    border-radius: 12px;
-    margin-bottom: 24px;
-}
-
-.mode-toggle button {
-    flex: 1;
-    padding: 10px;
-    background: transparent;
-    color: var(--text-muted);
-    border-radius: 8px;
-    font-weight: 600;
-}
-
-.mode-toggle button.active {
-    background: var(--accent);
-    color: #fff;
-    box-shadow: 0 4px 12px var(--accent-glow);
-}
-
+/* Sidebar Internal Lists */
 .section-title {
     display: flex;
     justify-content: space-between;
@@ -164,10 +191,7 @@ button {
     align-items: center;
     justify-content: center;
 }
-
-.section-title button:hover {
-    background: rgba(255,255,255,0.1);
-}
+.section-title button:hover { background: rgba(255,255,255,0.1); }
 
 .sidebar-list {
     list-style: none;
@@ -187,10 +211,7 @@ button {
     align-items: center;
 }
 
-.sidebar-list li:hover {
-    background: rgba(255,255,255,0.05);
-}
-
+.sidebar-list li:hover { background: rgba(255,255,255,0.05); }
 .sidebar-list li.active {
     background: rgba(255,255,255,0.1);
     border-left: 3px solid var(--accent-secondary);
@@ -242,58 +263,14 @@ button {
     font-size: 0.9rem;
     cursor: pointer;
 }
+.sidebar-footer button:hover, .sidebar-footer .btn:hover { background: rgba(255,255,255,0.1); }
 
-.sidebar-footer button:hover, .sidebar-footer .btn:hover {
-    background: rgba(255,255,255,0.1);
-}
 
-/* Main Content */
-.main-content {
-    flex: 1;
-    position: relative;
-    padding: 40px;
-    overflow-y: auto;
-}
-
-.view {
-    display: none;
-    flex-direction: column;
-    height: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    animation: fadeIn 0.4s ease-out;
-}
-
-.view.active-view {
-    display: flex;
-    width: 100%;
-    padding-top: 50px; /* space for toggle button */
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.view-header {
-    margin-bottom: 30px;
-}
-
-.view-header h1 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    margin-bottom: 8px;
-}
-
-.view-header p {
-    color: var(--text-muted);
-    font-size: 1.1rem;
-}
-
+/* 8. VIDEO PLAYER */
 .player-wrapper {
     width: 100%;
-    flex: 1; /* Automatically takes vertical space */
-    min-height: 0; /* Important for flex children */
+    flex: 1; 
+    min-height: 0; 
     padding: 8px;
     margin-bottom: 24px;
     display: flex;
@@ -309,7 +286,7 @@ button {
     pointer-events: auto;
 }
 
-/* DJ Controls */
+/* 9. DJ CONTROLS (Play/Pause/Menu bar) */
 .dj-controls {
     display: flex;
     justify-content: center;
@@ -329,7 +306,6 @@ button {
     align-items: center;
     justify-content: center;
 }
-
 .control-btn:hover {
     background: rgba(255,255,255,0.1);
     transform: scale(1.1);
@@ -341,18 +317,15 @@ button {
     background: var(--accent);
     box-shadow: 0 0 20px var(--accent-glow);
 }
-.play-btn:hover {
-    background: var(--accent-hover);
-}
+.play-btn:hover { background: var(--accent-hover); }
 
-/* Studio Mode */
+/* 10. STUDIO EDITOR CONTROLS */
 .studio-loader {
     display: flex;
     padding: 16px;
     gap: 16px;
     margin-bottom: 24px;
 }
-
 .studio-loader input {
     flex: 1;
     background: rgba(0,0,0,0.3);
@@ -360,13 +333,10 @@ button {
     border-radius: 8px;
     padding: 0 16px;
     color: #fff;
-    font-family: inherit;
     font-size: 1rem;
     outline: none;
 }
-.studio-loader input:focus {
-    border-color: var(--accent-secondary);
-}
+.studio-loader input:focus { border-color: var(--accent-secondary); }
 
 .studio-loader button, .action-btn {
     background: var(--accent-secondary);
@@ -375,7 +345,6 @@ button {
     padding: 12px 24px;
     border-radius: 8px;
 }
-
 .studio-loader button:hover, .action-btn:hover {
     filter: brightness(1.1);
     transform: translateY(-2px);
@@ -423,7 +392,6 @@ button {
     gap: 12px;
     min-width: 300px;
 }
-
 .save-group select {
     flex: 1;
     background: rgba(0,0,0,0.3);
@@ -431,7 +399,6 @@ button {
     color: #fff;
     border-radius: 8px;
     padding: 0 12px;
-    font-family: inherit;
     outline: none;
 }
 
@@ -445,7 +412,8 @@ button {
     border-radius: 4px;
 }
 
-/* Custom Modal */
+
+/* 11. CUSTOM MODAL */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -469,11 +437,7 @@ button {
     flex-direction: column;
     gap: 16px;
 }
-
-.modal-box h3 {
-    margin: 0;
-    font-size: 1.2rem;
-}
+.modal-box h3 { font-size: 1.2rem; margin: 0; }
 
 .modal-input {
     background: rgba(0,0,0,0.4);
@@ -481,15 +445,11 @@ button {
     border-radius: 8px;
     padding: 12px;
     color: #fff;
-    font-family: inherit;
     font-size: 1rem;
     outline: none;
     width: 100%;
 }
-
-.modal-input:focus {
-    border-color: var(--accent-secondary);
-}
+.modal-input:focus { border-color: var(--accent-secondary); }
 
 .modal-actions {
     display: flex;
@@ -497,36 +457,85 @@ button {
     gap: 12px;
     margin-top: 8px;
 }
-
 .modal-actions button {
     padding: 10px 16px;
     border-radius: 8px;
     background: rgba(255,255,255,0.05);
     color: #fff;
 }
-
-.modal-actions button:hover {
-    background: rgba(255,255,255,0.1);
-}
-
+.modal-actions button:hover { background: rgba(255,255,255,0.1); }
 .modal-actions .action-btn {
     background: var(--accent-secondary);
     color: #000;
+}
+
+
+/* 12. RESPONSIVE MEDIA QUERIES */
+@media (max-width: 768px) {
+    body {
+        overflow: auto;
+        height: auto;
+        min-height: 100vh;
+    }
+    
+    .app-container {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .sidebar {
+        width: 100%; /* Take full width on mobile when open */
+    }
+    
+    .main-content {
+        padding: 20px 10px;
+        overflow-y: visible;
+        flex: none; /* Let it dictate height on mobile */
+    }
+    
+    .view-header {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .view-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .view-header p {
+        font-size: 1rem;
+    }
+    
+    .dj-controls {
+        gap: 10px;
+        padding: 15px 5px;
+    }
+    
+    .control-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+    
     .play-btn {
         width: 60px;
         height: 60px;
     }
+    
     .modal-box {
         width: 90%;
         max-width: 350px;
     }
+    
     .studio-loader {
         flex-direction: column;
     }
+    
     .studio-controls {
         flex-direction: column;
         padding: 10px;
     }
+    
     .save-group {
         width: 100%;
         flex-direction: column;
