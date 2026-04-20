@@ -45,7 +45,7 @@ function renderTracks() {
     trackList.innerHTML = '';
     const tracks = djData.playlists[activePlaylist] || [];
     
-    djPlaylistTitle.textContent = activePlaylist || "No Playlist Selected";
+    djPlaylistTitle.textContent = activePlaylist || "Ninguna lista seleccionada";
 
     tracks.forEach((track, index) => {
         const li = document.createElement('li');
@@ -55,9 +55,9 @@ function renderTracks() {
         }
         
         li.innerHTML = `
-            <div class="track-title">${track.title || "Track " + (index+1)}</div>
+            <div class="track-title">${track.title || "Pista " + (index+1)}</div>
             <div class="track-meta">
-                <span>${formatTime(track.start)} - ${track.end ? formatTime(track.end) : 'End'}</span>
+                <span>${formatTime(track.start)} - ${track.end ? formatTime(track.end) : 'Fin'}</span>
             </div>
         `;
         
@@ -132,7 +132,7 @@ function loadDjTrack() {
     if (!djPlayer || !djPlayer.loadVideoById) return;
     const tracks = djData.playlists[activePlaylist];
     if (!tracks || tracks.length === 0) {
-        djTrackTitle.textContent = "No tracks in this playlist.";
+        djTrackTitle.textContent = "No hay pistas en esta lista.";
         return;
     }
     
@@ -140,7 +140,7 @@ function loadDjTrack() {
     if (djCurrentTrackIndex < 0) djCurrentTrackIndex = tracks.length - 1;
 
     const track = tracks[djCurrentTrackIndex];
-    djTrackTitle.textContent = track.title || `Playing Track ${djCurrentTrackIndex + 1}`;
+    djTrackTitle.textContent = track.title || `Reproduciendo Pista ${djCurrentTrackIndex + 1}`;
     
     renderTracks(); 
     

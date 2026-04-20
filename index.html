@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DJ Player Mode</title>
+    <title>Modo DJ Player</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -39,17 +39,17 @@
                 <h2>🎧 DJ Player</h2>
             </div>
             
-            <a href="studio.html" class="page-switch-btn">🛠️ Go to Studio Editor</a>
+            <a href="studio.html" class="page-switch-btn">🛠️ Editor Studio</a>
 
             <div class="section-title">
-                <h3>Playlists</h3>
+                <h3>Listas</h3>
             </div>
             <ul id="playlist-list" class="sidebar-list">
                 <!-- Playlists will be injected here -->
             </ul>
 
             <div class="section-title" style="margin-top: 20px;">
-                <h3>Tracks</h3>
+                <h3>Pistas</h3>
             </div>
             <ul id="track-list" class="sidebar-list track-list">
                 <!-- Tracks of active playlist injected here -->
@@ -61,8 +61,8 @@
             <!-- DJ Mode View -->
             <section id="dj-mode-view" class="view active-view">
                 <header class="view-header">
-                    <h1 id="dj-playlist-title">Select a Playlist</h1>
-                    <p id="dj-track-title">Ready to play...</p>
+                    <h1 id="dj-playlist-title">Selecciona una Lista</h1>
+                    <p id="dj-track-title">Listo para reproducir...</p>
                 </header>
 
                 <div class="player-wrapper glass-panel">
@@ -70,19 +70,19 @@
                 </div>
 
                 <div class="dj-controls glass-panel" style="position: relative;">
-                    <button id="menu-toggle" class="control-btn" title="Menu" style="position: absolute; left: 20px;">
+                    <button id="menu-toggle" class="control-btn" title="Menú" style="position: absolute; left: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                     </button>
-                    <button id="btn-prev" class="control-btn" title="Previous">
+                    <button id="btn-prev" class="control-btn" title="Anterior">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
                     </button>
-                    <button id="btn-play-pause" class="control-btn play-btn" title="Play">
+                    <button id="btn-play-pause" class="control-btn play-btn" title="Reproducir / Pausa">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                     </button>
-                    <button id="btn-next" class="control-btn" title="Next">
+                    <button id="btn-next" class="control-btn" title="Siguiente">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                     </button>
-                    <button id="btn-fullscreen" class="control-btn" title="Fullscreen" style="position: absolute; right: 20px;">
+                    <button id="btn-fullscreen" class="control-btn" title="Pantalla Completa" style="position: absolute; right: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
                     </button>
                 </div>

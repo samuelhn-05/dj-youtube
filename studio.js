@@ -168,10 +168,10 @@ function renderTracks() {
         const li = document.createElement('li');
         
         li.innerHTML = `
-            <div class="track-title">${track.title || "Track " + (index+1)}</div>
+            <div class="track-title">${track.title || "Pista " + (index+1)}</div>
             <div class="track-meta">
-                <span>${formatTime(track.start)} - ${track.end ? formatTime(track.end) : 'End'}</span>
-                <button class="track-delete" title="Remove track">Remove</button>
+                <span>${formatTime(track.start)} - ${track.end ? formatTime(track.end) : 'Fin'}</span>
+                <button class="track-delete" title="Eliminar pista">Quitar</button>
             </div>
         `;
         
@@ -252,7 +252,7 @@ document.getElementById('btn-cue-out').addEventListener('click', () => {
 
 function updateStudioLabels() {
     document.getElementById('label-cue-in').textContent = formatTime(studioCueIn);
-    document.getElementById('label-cue-out').textContent = studioCueOut ? formatTime(studioCueOut) : "End";
+    document.getElementById('label-cue-out').textContent = studioCueOut ? formatTime(studioCueOut) : "Fin";
 }
 
 document.getElementById('btn-save-track').addEventListener('click', async () => {
@@ -266,7 +266,7 @@ document.getElementById('btn-save-track').addEventListener('click', async () => 
         return;
     }
 
-    let finalTitle = "New Track";
+    let finalTitle = "Nueva Pista";
     try {
         const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${studioVideoId}`);
         const data = await response.json();
@@ -274,7 +274,7 @@ document.getElementById('btn-save-track').addEventListener('click', async () => 
             finalTitle = data.title;
         }
     } catch (e) {
-        console.warn("Could not fetch video title automatically.");
+        console.warn("No se pudo obtener el título automáticamente.");
     }
 
     customPrompt("Guardar Canción", "Confirma o edita el nombre (Auto-generado):", finalTitle, (titleStr) => {

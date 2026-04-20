@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +14,7 @@
             display: inline-block;
             margin-bottom: 24px;
             padding: 12px 20px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--panel-border);
             border-radius: 8px;
             color: var(--text-main);
@@ -22,12 +23,16 @@
             text-align: center;
             transition: background 0.2s;
         }
+
         .page-switch-btn:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
+
         .view.active-view {
-            display: flex; /* keep compatibility with our css */
+            display: flex;
+            /* keep compatibility with our css */
         }
+
         .track-delete {
             background: transparent;
             color: var(--danger);
@@ -36,11 +41,14 @@
         }
     </style>
 </head>
+
 <body>
     <div class="app-container">
         <!-- Floating Menu Button -->
         <button id="menu-toggle" class="menu-toggle" style="display:flex; align-items:center; gap:8px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg> Menú
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+            </svg> Menú
         </button>
 
         <!-- Sidebar -->
@@ -49,11 +57,11 @@
             <div class="sidebar-header">
                 <h2>🛠️ Studio</h2>
             </div>
-            
-            <a href="index.html" class="page-switch-btn">🎧 Go to DJ Player</a>
+
+            <a href="index.html" class="page-switch-btn">🎧 DJ Player</a>
 
             <div class="section-title">
-                <h3>Playlists (Edit Mode)</h3>
+                <h3>Listas</h3>
                 <button id="btn-add-playlist" title="New Playlist">+</button>
             </div>
             <ul id="playlist-list" class="sidebar-list">
@@ -61,7 +69,7 @@
             </ul>
 
             <div class="section-title" style="margin-top: 20px;">
-                <h3>Tracks</h3>
+                <h3>Pista</h3>
             </div>
             <ul id="track-list" class="sidebar-list track-list">
                 <!-- Tracks of active playlist injected here -->
@@ -69,13 +77,14 @@
 
             <div class="sidebar-footer" style="flex-direction: column;">
                 <div style="display: flex; gap: 10px; width: 100%;">
-                    <button id="btn-export" style="flex: 1;">Export File</button>
-                    <div class="btn" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center;">
-                        <label for="import-json" style="cursor:pointer;">Import File</label>
+                    <button id="btn-export" style="flex: 1;">Exportar Archivo</button>
+                    <div class="btn"
+                        style="flex: 1; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center;">
+                        <label for="import-json" style="cursor:pointer;">Importar Archivo</label>
                         <input type="file" id="import-json" accept=".json" style="display: none;">
                     </div>
                 </div>
-                <button id="btn-import-url" style="margin-top: 10px; width: 100%;">☁️ Import from URL</button>
+                <button id="btn-import-url" style="margin-top: 10px; width: 100%;">☁️ Importar desde URL</button>
             </div>
         </aside>
 
@@ -85,12 +94,14 @@
             <section id="studio-mode-view" class="view active-view">
                 <header class="view-header">
                     <h1>Studio Editor</h1>
-                    <p>Load a YouTube URL, mark start and end times, and save the segment to your mix.</p>
+                    <p>Carga una URL de YouTube, marca los tiempos de inicio y fin, y guarda el segmento en tu mezcla.
+                    </p>
                 </header>
-                
+
                 <div class="studio-loader glass-panel">
-                    <input type="text" id="studio-url-input" placeholder="Paste YouTube URL here (e.g., https://youtu.be/...)">
-                    <button id="btn-load-url">Load Video</button>
+                    <input type="text" id="studio-url-input"
+                        placeholder="Pega la URL de YouTube (ej. https://youtu.be/...)">
+                    <button id="btn-load-url">Cargar Video</button>
                 </div>
 
                 <div class="player-wrapper glass-panel">
@@ -99,20 +110,20 @@
 
                 <div class="studio-controls glass-panel">
                     <div class="marker-group">
-                        <button id="btn-cue-in" class="marker-btn">📍 Set Start (Cue In)</button>
+                        <button id="btn-cue-in" class="marker-btn">📍 Marcar Inicio</button>
                         <span id="label-cue-in" class="cue-label">0:00</span>
                     </div>
-                    
+
                     <div class="marker-group">
-                        <button id="btn-cue-out" class="marker-btn">🏁 Set End (Cue Out)</button>
-                        <span id="label-cue-out" class="cue-label">End</span>
+                        <button id="btn-cue-out" class="marker-btn">🏁 Marcar Fin</button>
+                        <span id="label-cue-out" class="cue-label">Fin</span>
                     </div>
 
                     <div class="save-group">
                         <select id="studio-playlist-select">
                             <!-- Options injected -->
                         </select>
-                        <button id="btn-save-track" class="action-btn">Save to Mix</button>
+                        <button id="btn-save-track" class="action-btn">Guardar el Mix</button>
                     </div>
                 </div>
             </section>
@@ -122,12 +133,12 @@
     <!-- Custom Modal Overlay -->
     <div id="custom-modal" class="modal-overlay">
         <div class="modal-box glass-panel">
-            <h3 id="modal-title">Title</h3>
+            <h3 id="modal-title">Título</h3>
             <p id="modal-desc"></p>
             <input type="text" id="modal-input" class="modal-input" style="display:none;">
             <div class="modal-actions">
-                <button id="modal-cancel">Cancel</button>
-                <button id="modal-confirm" class="action-btn">Confirm</button>
+                <button id="modal-cancel">Cancelar</button>
+                <button id="modal-confirm" class="action-btn">Confirmar</button>
             </div>
         </div>
     </div>
@@ -144,4 +155,5 @@
         });
     </script>
 </body>
+
 </html>
