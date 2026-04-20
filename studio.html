@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=2">
+    <style>
+        .page-switch-btn {
+            display: inline-block;
+            margin-bottom: 24px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .page-switch-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .view.active-view {
+            display: flex; /* keep compatibility with our css */
+        }
+        .track-delete {
+            background: transparent;
+            color: var(--danger);
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🛠️ Studio</h2>
+            </div>
+            
+            <a href="index.html" class="page-switch-btn">🎧 Go to DJ Player</a>
+
+            <div class="section-title">
+                <h3>Playlists (Edit Mode)</h3>
+                <button id="btn-add-playlist" title="New Playlist">+</button>
+            </div>
+            <ul id="playlist-list" class="sidebar-list">
+                <!-- Playlists will be injected here -->
+            </ul>
+
+            <div class="section-title" style="margin-top: 20px;">
+                <h3>Tracks</h3>
+            </div>
+            <ul id="track-list" class="sidebar-list track-list">
+                <!-- Tracks of active playlist injected here -->
+            </ul>
+
+            <div class="sidebar-footer">
+                <button id="btn-export">Export Data</button>
+                <label for="import-json" class="btn" style="display:inline-block; text-align:center; padding:10px;">Import</label>
+                <input type="file" id="import-json" accept=".json" style="display:none;">
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Studio Mode View -->
+            <section id="studio-mode-view" class="view active-view">
+                <header class="view-header">
+                    <h1>Studio Editor</h1>
+                    <p>Load a YouTube URL, mark start and end times, and save the segment to your mix.</p>
+                </header>
+                
+                <div class="studio-loader glass-panel">
+                    <input type="text" id="studio-url-input" placeholder="Paste YouTube URL here (e.g., https://youtu.be/...)">
+                    <button id="btn-load-url">Load Video</button>
+                </div>
+
+                <div class="player-wrapper glass-panel">
+                    <div id="studio-player" class="yt-player"></div>
+                </div>
+
+                <div class="studio-controls glass-panel">
+                    <div class="marker-group">
+                        <button id="btn-cue-in" class="marker-btn">📍 Set Start (Cue In)</button>
+                        <span id="label-cue-in" class="cue-label">0:00</span>
+                    </div>
+                    
+                    <div class="marker-group">
+                        <button id="btn-cue-out" class="marker-btn">🏁 Set End (Cue Out)</button>
+                        <span id="label-cue-out" class="cue-label">End</span>
+                    </div>
+
+                    <div class="save-group">
+                        <select id="studio-playlist-select">
+                            <!-- Options injected -->
+                        </select>
+                        <button id="btn-save-track" class="action-btn">Save to Mix</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Custom Modal Overlay -->
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-box glass-panel">
+            <h3 id="modal-title">Title</h3>
+            <p id="modal-desc"></p>
+            <input type="text" id="modal-input" class="modal-input" style="display:none;">
+            <div class="modal-actions">
+                <button id="modal-cancel">Cancel</button>
+                <button id="modal-confirm" class="action-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="data.js"></script>
+    <script src="studio.js"></script>
+</body>
+</html>

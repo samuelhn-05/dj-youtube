@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ Player Mode</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=2">
+    <style>
+        .page-switch-btn {
+            display: inline-block;
+            margin-bottom: 24px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .page-switch-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .view.active-view {
+            display: flex; /* keep compatibility with our css */
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🎧 DJ Player</h2>
+            </div>
+            
+            <a href="studio.html" class="page-switch-btn">🛠️ Go to Studio Editor</a>
+
+            <div class="section-title">
+                <h3>Playlists</h3>
+            </div>
+            <ul id="playlist-list" class="sidebar-list">
+                <!-- Playlists will be injected here -->
+            </ul>
+
+            <div class="section-title" style="margin-top: 20px;">
+                <h3>Tracks</h3>
+            </div>
+            <ul id="track-list" class="sidebar-list track-list">
+                <!-- Tracks of active playlist injected here -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- DJ Mode View -->
+            <section id="dj-mode-view" class="view active-view">
+                <header class="view-header">
+                    <h1 id="dj-playlist-title">Select a Playlist</h1>
+                    <p id="dj-track-title">Ready to play...</p>
+                </header>
+
+                <div class="player-wrapper glass-panel">
+                    <div id="dj-player" class="yt-player"></div>
+                </div>
+
+                <div class="dj-controls glass-panel">
+                    <button id="btn-prev" class="control-btn" title="Previous">⏮</button>
+                    <button id="btn-play-pause" class="control-btn play-btn" title="Play">▶️</button>
+                    <button id="btn-next" class="control-btn" title="Next">⏭</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="data.js"></script>
+    <script src="dj.js"></script>
+</body>
+</html>
