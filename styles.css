@@ -268,10 +268,10 @@ button {
 
 /* 8. VIDEO PLAYER */
 .player-wrapper {
-    width: 100%;
+    width: 80%;
     aspect-ratio: 16 / 9;
     padding: 8px;
-    margin-bottom: 24px;
+    margin: 0 auto 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -521,6 +521,10 @@ button {
         height: 60px;
     }
     
+    .player-wrapper {
+        width: 100%;
+    }
+
     .modal-box {
         width: 90%;
         max-width: 350px;
