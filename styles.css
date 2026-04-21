@@ -73,7 +73,7 @@ button {
 .view {
     display: none;
     flex-direction: column;
-    height: 100%;
+    min-height: 100%;
     max-width: 1000px;
     margin: 0 auto;
     animation: fadeIn 0.4s ease-out;
@@ -269,8 +269,7 @@ button {
 /* 8. VIDEO PLAYER */
 .player-wrapper {
     width: 100%;
-    flex: 1; 
-    min-height: 0; 
+    aspect-ratio: 16 / 9;
     padding: 8px;
     margin-bottom: 24px;
     display: flex;
