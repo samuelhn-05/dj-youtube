@@ -36,6 +36,7 @@ function renderPlaylists() {
             djCurrentTrackIndex = 0;
             renderPlaylists();
             loadDjTrack();
+            showTrackPanel();
         };
         playlistList.appendChild(li);
     }
@@ -192,7 +193,37 @@ renderPlaylists();
 
 // ─── FireTV D-PAD NAVIGATION ─────────────────────────────────────────────────
 
-const sidebar = document.getElementById('sidebar');
+const sidebar       = document.getElementById('sidebar');
+const panelPlaylists = document.getElementById('panel-playlists');
+const panelTracks    = document.getElementById('panel-tracks');
+const panelTracksTitle = document.getElementById('panel-tracks-title');
+const btnBackToPlaylists = document.getElementById('btn-back-to-playlists');
+
+function showPlaylistPanel() {
+    panelPlaylists.style.display = 'flex';
+    panelTracks.style.display    = 'none';
+    setTimeout(() => {
+        const active = playlistList.querySelector('li.active') || playlistList.querySelector('li');
+        if (active) active.focus();
+    }, 50);
+}
+
+function showTrackPanel() {
+    panelPlaylists.style.display = 'none';
+    panelTracks.style.display    = 'flex';
+    if (panelTracksTitle) panelTracksTitle.textContent = activePlaylist;
+    setTimeout(() => {
+        const first = trackList.querySelector('li');
+        if (first) first.focus();
+    }, 50);
+}
+
+if (btnBackToPlaylists) {
+    btnBackToPlaylists.addEventListener('click', showPlaylistPanel);
+    btnBackToPlaylists.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); showPlaylistPanel(); }
+    });
+}
 
 // Orden de foco en los controles principales
 const mainControls = [
@@ -222,11 +253,7 @@ function isSidebarOpen() {
 function openSidebar() {
     sidebar.classList.add('open');
     document.body.classList.add('sidebar-open');
-    // Foco en el primer item de playlist
-    setTimeout(() => {
-        const first = playlistList.querySelector('li');
-        if (first) first.focus();
-    }, 80);
+    showPlaylistPanel();
 }
 
 function closeSidebar() {
@@ -274,34 +301,30 @@ document.addEventListener('keydown', (e) => {
         const inPlaylist = playlistList.contains(active);
         const inTrack = trackList.contains(active);
 
+        const tracksVisible = panelTracks.style.display !== 'none';
+
         if (e.key === 'ArrowDown') {
-            if (inPlaylist) {
-                const plItems = Array.from(playlistList.querySelectorAll('li'));
-                const idx = plItems.indexOf(active);
-                if (idx === plItems.length - 1) {
-                    // Último playlist → bajar a primera pista
-                    const first = trackList.querySelector('li');
-                    if (first) first.focus();
-                } else {
-                    navigateList(playlistList, 'down');
-                }
-            } else if (inTrack) {
-                navigateList(trackList, 'down');
+            if (inPlaylist) navigateList(playlistList, 'down');
+            else if (inTrack) navigateList(trackList, 'down');
+            else if (active === btnBackToPlaylists) {
+                const first = trackList.querySelector('li');
+                if (first) first.focus();
             }
         } else if (e.key === 'ArrowUp') {
             if (inTrack) {
                 const trItems = Array.from(trackList.querySelectorAll('li'));
-                const idx = trItems.indexOf(active);
-                if (idx === 0) {
-                    // Primera pista → subir al último playlist
-                    const plItems = playlistList.querySelectorAll('li');
-                    if (plItems.length) plItems[plItems.length - 1].focus();
+                if (trItems.indexOf(active) === 0) {
+                    // Primer pista con ↑ → foco en botón volver
+                    if (btnBackToPlaylists) btnBackToPlaylists.focus();
                 } else {
                     navigateList(trackList, 'up');
                 }
             } else if (inPlaylist) {
                 navigateList(playlistList, 'up');
             }
+        } else if (e.key === 'ArrowLeft') {
+            // Izquierda en panel de pistas → volver a listas
+            if (tracksVisible) showPlaylistPanel();
         } else if (e.key === 'ArrowRight') {
             // Derecha → cerrar sidebar y volver a controles
             closeSidebar();

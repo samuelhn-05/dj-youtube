@@ -41,19 +41,26 @@
             
             <a href="studio.html" class="page-switch-btn">🛠️ Editor Studio</a>
 
-            <div class="section-title">
-                <h3>Listas</h3>
+            <!-- Panel: Listas -->
+            <div id="panel-playlists">
+                <div class="section-title">
+                    <h3>Listas</h3>
+                </div>
+                <ul id="playlist-list" class="sidebar-list">
+                    <!-- Playlists will be injected here -->
+                </ul>
             </div>
-            <ul id="playlist-list" class="sidebar-list">
-                <!-- Playlists will be injected here -->
-            </ul>
 
-            <div class="section-title" style="margin-top: 20px;">
-                <h3>Pistas</h3>
+            <!-- Panel: Pistas -->
+            <div id="panel-tracks" style="display:none;">
+                <div class="section-title section-title--back" id="btn-back-to-playlists" tabindex="0">
+                    <span class="back-arrow">‹</span>
+                    <h3 id="panel-tracks-title">Pistas</h3>
+                </div>
+                <ul id="track-list" class="sidebar-list track-list">
+                    <!-- Tracks of active playlist injected here -->
+                </ul>
             </div>
-            <ul id="track-list" class="sidebar-list track-list">
-                <!-- Tracks of active playlist injected here -->
-            </ul>
         </aside>
 
         <!-- Main Content -->

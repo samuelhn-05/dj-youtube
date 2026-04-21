@@ -172,6 +172,45 @@ body.sidebar-open .sidebar {
     pointer-events: all;
 }
 
+/* Paneles drill-down del sidebar */
+#panel-playlists,
+#panel-tracks {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.sidebar-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* Botón volver a listas */
+.section-title--back {
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 6px 4px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.section-title--back:hover,
+.section-title--back:focus-visible {
+    background: rgba(255,255,255,0.08);
+    outline: 2px solid var(--accent-secondary);
+    outline-offset: 2px;
+}
+
+.back-arrow {
+    font-size: 1.4rem;
+    color: var(--accent-secondary);
+    line-height: 1;
+}
+
 /* Sidebar Internal Lists */
 .section-title {
     display: flex;
