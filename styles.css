@@ -588,15 +588,15 @@ button:focus-visible {
         max-width: calc(68vh * (16 / 9));
     }
 
-    /* Botones de control más grandes */
+    /* Botones de control ajustados para TV */
     .control-btn {
-        width: 70px;
-        height: 70px;
+        width: 52px;
+        height: 52px;
     }
 
     .play-btn {
-        width: 90px;
-        height: 90px;
+        width: 68px;
+        height: 68px;
     }
 
     /* Sidebar más ancha */

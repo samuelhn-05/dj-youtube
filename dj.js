@@ -27,6 +27,7 @@ function renderPlaylists() {
     for (const pl in djData.playlists) {
         const li = document.createElement('li');
         li.textContent = pl;
+        li.setAttribute('tabindex', '0');
         if (pl === activePlaylist) {
             li.classList.add('active');
         }
@@ -49,18 +50,19 @@ function renderTracks() {
 
     tracks.forEach((track, index) => {
         const li = document.createElement('li');
+        li.setAttribute('tabindex', '0');
         if (index === djCurrentTrackIndex) {
             li.style.borderLeft = "3px solid #00b4d8";
             li.style.background = "rgba(255,255,255,0.1)";
         }
-        
+
         li.innerHTML = `
             <div class="track-title">${track.title || "Pista " + (index+1)}</div>
             <div class="track-meta">
                 <span>${formatTime(track.start)} - ${track.end ? formatTime(track.end) : 'Fin'}</span>
             </div>
         `;
-        
+
         li.onclick = () => {
             djCurrentTrackIndex = index;
             renderTracks();
@@ -330,23 +332,15 @@ mainControls.forEach((btn, i) => {
     btn.addEventListener('focus', () => { focusedControlIndex = i; });
 });
 
-// Hacer que los items del sidebar sean navegables con teclado
-// Usamos delegación en el ul para evitar listeners duplicados al re-renderizar
-function makeListFocusable(ul) {
-    // Asignar tabindex a nuevos items via MutationObserver
-    const observer = new MutationObserver(() => {
-        ul.querySelectorAll('li:not([tabindex])').forEach(li => {
-            li.setAttribute('tabindex', '0');
-        });
+// Delegación de Enter en los ul del sidebar (evita listeners duplicados al re-renderizar)
+[playlistList, trackList].forEach(ul => {
+    ul.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.target.tagName === 'LI') {
+            e.preventDefault();
+            e.target.click();
+        }
     });
-    observer.observe(ul, { childList: true, subtree: true });
-
-    // Aplicar a items ya existentes
-    ul.querySelectorAll('li').forEach(li => li.setAttribute('tabindex', '0'));
-}
-
-makeListFocusable(playlistList);
-makeListFocusable(trackList);
+});
 
 // Inicializar foco tras cargar el player
 setTimeout(initFocus, 1500);
