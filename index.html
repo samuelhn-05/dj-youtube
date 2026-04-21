@@ -70,19 +70,19 @@
                 </div>
 
                 <div class="dj-controls glass-panel" style="position: relative;">
-                    <button id="menu-toggle" class="control-btn" title="Menú" style="position: absolute; left: 20px;">
+                    <button id="menu-toggle" class="control-btn" title="Menú" tabindex="0" style="position: absolute; left: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                     </button>
-                    <button id="btn-prev" class="control-btn" title="Anterior">
+                    <button id="btn-prev" class="control-btn" title="Anterior" tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
                     </button>
-                    <button id="btn-play-pause" class="control-btn play-btn" title="Reproducir / Pausa">
+                    <button id="btn-play-pause" class="control-btn play-btn" title="Reproducir / Pausa" tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                     </button>
-                    <button id="btn-next" class="control-btn" title="Siguiente">
+                    <button id="btn-next" class="control-btn" title="Siguiente" tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                     </button>
-                    <button id="btn-fullscreen" class="control-btn" title="Pantalla Completa" style="position: absolute; right: 20px;">
+                    <button id="btn-fullscreen" class="control-btn" title="Pantalla Completa" tabindex="0" style="position: absolute; right: 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
                     </button>
                 </div>
@@ -95,10 +95,12 @@
     <script src="dj.js"></script>
     <script>
         document.getElementById('menu-toggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.add('open');
+            if (typeof openSidebar === 'function') openSidebar();
+            else document.getElementById('sidebar').classList.add('open');
         });
         document.getElementById('menu-close').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.remove('open');
+            if (typeof closeSidebar === 'function') closeSidebar();
+            else document.getElementById('sidebar').classList.remove('open');
         });
     </script>
 </body>

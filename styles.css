@@ -45,8 +45,6 @@ button {
 .glass-panel {
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border-radius: 16px;
 }
 
@@ -107,9 +105,8 @@ button {
 /* 7. COLLAPSIBLE SIDEBAR */
 .sidebar {
     width: 340px;
-    background: rgba(15, 17, 21, 0.95);
+    background: rgba(15, 17, 21, 0.98);
     border-right: 1px solid var(--panel-border);
-    backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -269,8 +266,7 @@ button {
 /* 8. VIDEO PLAYER */
 .player-wrapper {
     width: 100%;
-    /* Aseguramos que la altura no sea más del 55% de la pantalla para dejar espacio a los controles */
-    max-width: calc(55vh * (16 / 9));
+    max-width: calc(62vh * (16 / 9));
     aspect-ratio: 16 / 9;
     padding: 8px;
     margin: 0 auto 24px;
@@ -545,5 +541,96 @@ button {
     .save-group {
         width: 100%;
         flex-direction: column;
+    }
+}
+
+/* 13. FIRETV / TV OPTIMIZATIONS */
+
+/* Focus ring visible para D-pad */
+button:focus-visible,
+a:focus-visible,
+li:focus-visible,
+select:focus-visible {
+    outline: 3px solid var(--accent-secondary);
+    outline-offset: 4px;
+    box-shadow: 0 0 0 6px rgba(0, 180, 216, 0.25);
+}
+
+/* Eliminar outline por defecto — usamos el nuestro */
+button:focus,
+a:focus,
+li:focus,
+select:focus {
+    outline: none;
+}
+
+button:focus-visible {
+    outline: 3px solid var(--accent-secondary);
+    outline-offset: 4px;
+}
+
+@media (min-width: 960px) {
+    /* Tipografía más grande para pantalla de TV */
+    body {
+        font-size: 18px;
+    }
+
+    .view-header h1 {
+        font-size: 2.8rem;
+    }
+
+    .view-header p {
+        font-size: 1.3rem;
+    }
+
+    /* Player más grande */
+    .player-wrapper {
+        max-width: calc(68vh * (16 / 9));
+    }
+
+    /* Botones de control más grandes */
+    .control-btn {
+        width: 70px;
+        height: 70px;
+    }
+
+    .play-btn {
+        width: 90px;
+        height: 90px;
+    }
+
+    /* Sidebar más ancha */
+    .sidebar {
+        width: 380px;
+    }
+
+    /* Items de lista más grandes y fáciles de seleccionar */
+    .sidebar-list li {
+        padding: 16px;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+
+    .track-title {
+        font-size: 1.1rem;
+    }
+
+    .track-meta {
+        font-size: 0.95rem;
+    }
+
+    .section-title h3 {
+        font-size: 1rem;
+    }
+
+    /* DJ controls más espaciados */
+    .dj-controls {
+        gap: 40px;
+        padding: 16px 24px;
+    }
+
+    /* Sidebar header más grande */
+    .sidebar-header h2 {
+        font-size: 1.8rem;
     }
 }
