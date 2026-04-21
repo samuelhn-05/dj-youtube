@@ -161,6 +161,7 @@ button {
     margin-bottom: 24px;
     background: linear-gradient(90deg, #fff, #bce0ff);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
