@@ -221,15 +221,17 @@ function isSidebarOpen() {
 
 function openSidebar() {
     sidebar.classList.add('open');
+    document.body.classList.add('sidebar-open');
     // Foco en el primer item de playlist
     setTimeout(() => {
         const first = playlistList.querySelector('li');
         if (first) first.focus();
-    }, 50);
+    }, 80);
 }
 
 function closeSidebar() {
     sidebar.classList.remove('open');
+    document.body.classList.remove('sidebar-open');
     setTimeout(() => focusControl(focusedControlIndex), 50);
 }
 
@@ -262,19 +264,22 @@ document.addEventListener('keydown', (e) => {
         return;
     }
 
-    // Si el sidebar está abierto, manejar navegación interna
+    // Si el sidebar está abierto, bloquear scroll de página en TODAS las flechas
     if (isSidebarOpen()) {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            e.preventDefault();
+        }
+
         const active = document.activeElement;
         const inPlaylist = playlistList.contains(active);
         const inTrack = trackList.contains(active);
 
         if (e.key === 'ArrowDown') {
-            e.preventDefault();
             if (inPlaylist) {
-                // Si ya está en el último item de playlist, saltar a pistas
                 const plItems = Array.from(playlistList.querySelectorAll('li'));
                 const idx = plItems.indexOf(active);
                 if (idx === plItems.length - 1) {
+                    // Último playlist → bajar a primera pista
                     const first = trackList.querySelector('li');
                     if (first) first.focus();
                 } else {
@@ -284,14 +289,13 @@ document.addEventListener('keydown', (e) => {
                 navigateList(trackList, 'down');
             }
         } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
             if (inTrack) {
-                // Si está en el primer item de pistas, subir a playlists
                 const trItems = Array.from(trackList.querySelectorAll('li'));
                 const idx = trItems.indexOf(active);
                 if (idx === 0) {
-                    const last = playlistList.querySelectorAll('li');
-                    if (last.length) last[last.length - 1].focus();
+                    // Primera pista → subir al último playlist
+                    const plItems = playlistList.querySelectorAll('li');
+                    if (plItems.length) plItems[plItems.length - 1].focus();
                 } else {
                     navigateList(trackList, 'up');
                 }
@@ -299,8 +303,7 @@ document.addEventListener('keydown', (e) => {
                 navigateList(playlistList, 'up');
             }
         } else if (e.key === 'ArrowRight') {
-            // Derecha desde sidebar → cerrar y volver a controles
-            e.preventDefault();
+            // Derecha → cerrar sidebar y volver a controles
             closeSidebar();
         }
         return;

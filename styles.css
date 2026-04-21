@@ -162,6 +162,16 @@ button {
     -webkit-text-fill-color: transparent;
 }
 
+/* Cuando el sidebar está abierto, bloquear scroll del fondo */
+body.sidebar-open .main-content {
+    overflow: hidden;
+    pointer-events: none;
+}
+
+body.sidebar-open .sidebar {
+    pointer-events: all;
+}
+
 /* Sidebar Internal Lists */
 .section-title {
     display: flex;
@@ -604,11 +614,11 @@ button:focus-visible {
         width: 380px;
     }
 
-    /* Items de lista más grandes y fáciles de seleccionar */
+    /* Items de lista compactos para que quepan más en pantalla */
     .sidebar-list li {
-        padding: 16px;
-        font-size: 1.1rem;
-        margin-bottom: 10px;
+        padding: 10px 12px;
+        font-size: 1rem;
+        margin-bottom: 6px;
     }
 
     .track-title {
