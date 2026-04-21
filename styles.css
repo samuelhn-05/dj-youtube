@@ -267,7 +267,9 @@ button {
 
 /* 8. VIDEO PLAYER */
 .player-wrapper {
-    width: 50%;
+    width: 100%;
+    /* Aseguramos que la altura no sea más del 55% de la pantalla para dejar espacio a los controles */
+    max-width: calc(55vh * (16 / 9));
     aspect-ratio: 16 / 9;
     padding: 8px;
     margin: 0 auto 24px;
@@ -522,6 +524,7 @@ button {
     
     .player-wrapper {
         width: 100%;
+        max-width: 100%;
     }
 
     .modal-box {
