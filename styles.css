@@ -268,7 +268,7 @@ button {
 
 /* 8. VIDEO PLAYER */
 .player-wrapper {
-    width: 80%;
+    width: 70%;
     aspect-ratio: 16 / 9;
     padding: 8px;
     margin: 0 auto 24px;
