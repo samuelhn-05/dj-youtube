@@ -9,9 +9,6 @@ if (!djData) {
             "Salsa Mix": [
                 { videoId: "14kyBUvsgss", title: "Salsa Track 1", start: 0, end: 130 },
                 { videoId: "MjdPy3njToM", title: "Salsa Track 2", start: 10, end: 238 }
-            ],
-            "Pop Mix": [
-                { videoId: "BOSHJNb9V1Y", title: "Pop Track 1", start: 30, end: 90 }
             ]
         }
     };
