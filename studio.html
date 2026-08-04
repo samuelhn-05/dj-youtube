@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=6">
+    <link rel="stylesheet" href="styles.css?v=8">
     <style>
         .page-switch-btn {
             display: inline-block;
@@ -79,6 +79,19 @@
                     </div>
                 </div>
                 <button id="btn-import-url" style="margin-top: 10px; width: 100%;">☁️ Importar desde URL</button>
+            </div>
+
+            <div class="sidebar-footer" style="flex-direction: column; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--panel-border);">
+                <h3 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px;">☁️ Backup en la Nube</h3>
+                <input type="password" id="gh-token-input" class="modal-input" placeholder="Token de GitHub (scope: gist)" style="margin-bottom: 6px;">
+                <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-bottom: 10px;">
+                    Crea un token en github.com/settings/tokens con permiso solo de "gist". Se guarda únicamente en este navegador.
+                </small>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button id="btn-cloud-backup" style="flex: 1;">💾 Guardar</button>
+                    <button id="btn-cloud-restore" style="flex: 1;">⬇️ Restaurar</button>
+                </div>
+                <span id="cloud-backup-status" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; display: block;"></span>
             </div>
         </aside>
 

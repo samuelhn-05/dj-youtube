@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=6">
+    <link rel="stylesheet" href="styles.css?v=8">
     <style>
         .page-switch-btn {
             display: inline-block;
@@ -75,6 +75,21 @@
                 <div class="player-wrapper glass-panel">
                     <div class="deck" id="deck-a-wrap"><div id="deck-a"></div></div>
                     <div class="deck" id="deck-b-wrap"><div id="deck-b"></div></div>
+                    <div id="up-next-badge" class="up-next-badge">
+                        <span class="up-next-label">▶ Reproduciendo</span>
+                        <span id="up-next-title" class="up-next-title"></span>
+                    </div>
+                </div>
+
+                <div class="progress-wrap glass-panel">
+                    <div class="progress-track">
+                        <div id="progress-fill" class="progress-fill"></div>
+                        <div id="progress-cueout-marker" class="progress-cueout-marker" title="Punto de mezcla"></div>
+                    </div>
+                    <div class="progress-times">
+                        <span id="progress-current">0:00</span>
+                        <span id="progress-total">0:00</span>
+                    </div>
                 </div>
 
                 <div class="dj-controls glass-panel" style="position: relative;">

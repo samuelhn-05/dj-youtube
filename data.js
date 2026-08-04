@@ -27,6 +27,11 @@ function formatTime(seconds) {
     return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
+// Videos marcados como no reproducibles en esta sesión (borrados, privados,
+// bloqueados por región, etc.). Se resetea al recargar la página porque la
+// disponibilidad puede cambiar.
+let unavailableVideoIds = new Set();
+
 // Duración global del crossfade entre pistas (segundos). 0 = corte directo.
 let crossfadeDuration = parseFloat(localStorage.getItem('dj-crossfade'));
 if (isNaN(crossfadeDuration) || crossfadeDuration < 0) crossfadeDuration = 4;
