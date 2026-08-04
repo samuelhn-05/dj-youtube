@@ -1,7 +1,8 @@
 // ─── MOTOR DJ DE DOBLE DECK (crossfade) ──────────────────────────────────────
 // Dos reproductores de YouTube superpuestos: mientras uno suena, el otro
 // precarga la siguiente pista. Al llegar al punto de salida se hace una
-// rampa cruzada de volumen + fundido visual, sin silencio entre pistas.
+// rampa cruzada de volumen (curva equal-power) + fundido visual, sin
+// silencio entre pistas.
 
 let djCurrentTrackIndex = 0;
 let isPlaying = false;
@@ -9,6 +10,8 @@ let checkInterval = null;
 let fadeTimer = null;
 let crossfading = false;
 let playersReady = 0;
+let consecutiveErrorSkips = 0;
+let wakeLock = null;
 
 const decks = [
     { player: null, wrap: null, cuedIndex: null, cuedVideoId: null },
@@ -21,24 +24,31 @@ const trackList = document.getElementById('track-list');
 const djPlaylistTitle = document.getElementById('dj-playlist-title');
 const djTrackTitle = document.getElementById('dj-track-title');
 const playBtn = document.getElementById('btn-play-pause');
+const upNextBadge = document.getElementById('up-next-badge');
+const upNextTitleEl = document.getElementById('up-next-title');
+const progressFill = document.getElementById('progress-fill');
+const progressMarker = document.getElementById('progress-cueout-marker');
+const progressCurrentEl = document.getElementById('progress-current');
+const progressTotalEl = document.getElementById('progress-total');
 
 // Initialize YouTube API — crea los dos decks
 function onYouTubeIframeAPIReady() {
     decks[0].wrap = document.getElementById('deck-a-wrap');
     decks[1].wrap = document.getElementById('deck-b-wrap');
 
-    const deckConfig = (elementId) => ({
+    const deckConfig = () => ({
         height: '100%',
         width: '100%',
         playerVars: { controls: 1, modestbranding: 1, rel: 0 },
         events: {
             'onReady': onDeckReady,
-            'onStateChange': onDeckStateChange
+            'onStateChange': onDeckStateChange,
+            'onError': onDeckError
         }
     });
 
-    decks[0].player = new YT.Player('deck-a', deckConfig('deck-a'));
-    decks[1].player = new YT.Player('deck-b', deckConfig('deck-b'));
+    decks[0].player = new YT.Player('deck-a', deckConfig());
+    decks[1].player = new YT.Player('deck-b', deckConfig());
 }
 
 function onDeckReady() {
@@ -51,18 +61,25 @@ function onDeckReady() {
     loadDjTrack();
 }
 
+function deckIndexOf(player) {
+    return decks[0].player === player ? 0 : 1;
+}
+
 function onDeckStateChange(event) {
     // Ignorar eventos del deck inactivo (el que precarga o se está apagando)
     if (event.target !== decks[activeDeckIdx].player) return;
 
     if (event.data == YT.PlayerState.PLAYING) {
         isPlaying = true;
+        consecutiveErrorSkips = 0;
         updatePlayBtn();
         startCheckInterval();
+        requestWakeLock();
     } else {
         isPlaying = false;
         updatePlayBtn();
         stopCheckInterval();
+        if (event.data == YT.PlayerState.PAUSED) releaseWakeLock();
     }
 
     if (event.data == YT.PlayerState.ENDED) {
@@ -70,6 +87,81 @@ function onDeckStateChange(event) {
         // cambio instantáneo al deck precargado (sin hueco de carga).
         crossfadeTo(djCurrentTrackIndex + 1, 0);
     }
+}
+
+// Un video no se pudo reproducir (borrado, privado, bloqueado por región...).
+// Lo marcamos y saltamos automáticamente para no dejar la sesión colgada.
+function onDeckError(event) {
+    const deckIdx = deckIndexOf(event.target);
+    const deck = decks[deckIdx];
+
+    if (deckIdx === activeDeckIdx) {
+        markTrackUnavailable(djCurrentTrackIndex);
+        const tracks = djData.playlists[activePlaylist] || [];
+        consecutiveErrorSkips++;
+        if (consecutiveErrorSkips >= Math.max(tracks.length, 1)) {
+            consecutiveErrorSkips = 0;
+            djTrackTitle.textContent = "Ninguna pista de esta lista se pudo reproducir.";
+            return;
+        }
+        setTimeout(() => hardLoadTrack(djCurrentTrackIndex + 1), 300);
+    } else {
+        // Falló la precarga silenciosa: marcar y reintentar con la siguiente
+        if (deck.cuedIndex != null) markTrackUnavailable(deck.cuedIndex);
+        deck.cuedIndex = null;
+        deck.cuedVideoId = null;
+        setTimeout(preloadNext, 300);
+    }
+}
+
+function markTrackUnavailable(index) {
+    const tracks = djData.playlists[activePlaylist] || [];
+    const track = tracks[index];
+    if (!track) return;
+    unavailableVideoIds.add(track.videoId);
+    renderTracks();
+}
+
+// ─── WAKE LOCK (mantener la TV encendida durante el set) ────────────────────
+
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator && !wakeLock) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => { wakeLock = null; });
+        }
+    } catch (e) {
+        // No soportado o denegado (ej. pestaña no visible) — no es crítico
+    }
+}
+
+function releaseWakeLock() {
+    if (wakeLock) {
+        wakeLock.release().catch(() => {});
+        wakeLock = null;
+    }
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && isPlaying) requestWakeLock();
+});
+
+// ─── MITIGACIÓN DE ANUNCIOS ──────────────────────────────────────────────────
+// La API de YouTube no expone si se está reproduciendo un anuncio. Como
+// mitigación práctica: si pedimos arrancar en startSeconds > 3s y poco
+// después el reproductor sigue cerca de 0, lo más probable es que un
+// anuncio esté ocupando el inicio — forzamos el salto al punto real.
+function scheduleAdGuard(deckObj, expectedStart) {
+    if (!expectedStart || expectedStart < 3) return;
+    const player = deckObj.player;
+    setTimeout(() => {
+        try {
+            const t = player.getCurrentTime();
+            if (t < expectedStart - 3) {
+                player.seekTo(expectedStart, true);
+            }
+        } catch (e) { /* deck no disponible en ese momento */ }
+    }, 1800);
 }
 
 function renderPlaylists() {
@@ -119,6 +211,14 @@ function renderTracks() {
 
         li.appendChild(title);
         li.appendChild(meta);
+
+        if (unavailableVideoIds.has(track.videoId)) {
+            li.classList.add('track-unavailable');
+            const warn = document.createElement('span');
+            warn.className = 'track-unavailable-tag';
+            warn.textContent = '⚠️ No disponible';
+            meta.appendChild(warn);
+        }
 
         li.onclick = () => {
             goToTrack(index, true);
@@ -175,6 +275,53 @@ function updateNowPlaying() {
     djTrackTitle.textContent = track.title || `Reproduciendo Pista ${djCurrentTrackIndex + 1}`;
 }
 
+// ─── INDICADOR "REPRODUCIENDO AHORA" (se muestra brevemente en cada mezcla) ──
+
+function showUpNextBadge(title) {
+    if (!upNextBadge || !upNextTitleEl) return;
+    upNextTitleEl.textContent = title;
+    upNextBadge.style.display = 'flex';
+    // Forzar reflow para que la transición de opacidad se dispare siempre
+    void upNextBadge.offsetWidth;
+    upNextBadge.classList.add('visible');
+    clearTimeout(showUpNextBadge._t);
+    showUpNextBadge._t = setTimeout(() => {
+        upNextBadge.classList.remove('visible');
+        setTimeout(() => { upNextBadge.style.display = 'none'; }, 400);
+    }, 4000);
+}
+
+// ─── BARRA DE PROGRESO CON MARCADOR DEL PUNTO DE MEZCLA ─────────────────────
+
+function updateProgressUI(player, track, currentTime) {
+    if (!progressFill) return;
+    let duration = player.getDuration ? player.getDuration() : 0;
+    if (!duration || isNaN(duration)) duration = track.end || currentTime || 1;
+
+    const pct = Math.max(0, Math.min(1, currentTime / duration)) * 100;
+    progressFill.style.width = pct + '%';
+
+    if (progressMarker) {
+        if (track.end != null && duration > 0) {
+            const markerPct = Math.max(0, Math.min(1, track.end / duration)) * 100;
+            progressMarker.style.left = markerPct + '%';
+            progressMarker.style.display = 'block';
+        } else {
+            progressMarker.style.display = 'none';
+        }
+    }
+
+    if (progressCurrentEl) progressCurrentEl.textContent = formatTime(currentTime);
+    if (progressTotalEl) progressTotalEl.textContent = formatTime(duration);
+}
+
+function resetProgressUI() {
+    if (progressFill) progressFill.style.width = '0%';
+    if (progressMarker) progressMarker.style.display = 'none';
+    if (progressCurrentEl) progressCurrentEl.textContent = '0:00';
+    if (progressTotalEl) progressTotalEl.textContent = '0:00';
+}
+
 // Duración real del fade: nunca más de la mitad del segmento de la pista
 function effectiveFade(track) {
     let d = crossfadeDuration || 0;
@@ -201,6 +348,7 @@ function hardLoadTrack(index) {
 
     updateNowPlaying();
     renderTracks();
+    resetProgressUI();
 
     const deck = decks[activeDeckIdx];
     if (!deck.player || !deck.player.loadVideoById) return;
@@ -211,6 +359,7 @@ function hardLoadTrack(index) {
             startSeconds: track.start,
             endSeconds: track.end
         });
+        scheduleAdGuard(deck, track.start);
     } catch (e) { /* player aún no listo */ }
     preloadNext();
 }
@@ -270,6 +419,7 @@ function crossfadeTo(index, duration) {
                 endSeconds: track.end
             });
         }
+        scheduleAdGuard(to, track.start);
     } catch (e) {
         // Si el deck entrante falla, caemos a carga dura en el activo
         hardLoadTrack(index);
@@ -283,6 +433,7 @@ function crossfadeTo(index, duration) {
     to.cuedVideoId = null;
     updateNowPlaying();
     renderTracks();
+    showUpNextBadge(track.title || `Pista ${index + 1}`);
 
     // Fundido visual (opacity es barato en FireTV: lo composita la GPU)
     const toWrap = to.wrap;
@@ -303,8 +454,9 @@ function crossfadeTo(index, duration) {
         return;
     }
 
-    // Rampa cruzada de volumen. Un solo intervalo, pasos de 100ms — ligero
-    // para el hardware del Fire Stick.
+    // Rampa cruzada de volumen con curva equal-power (cos/sin en cuarto de
+    // círculo): mantiene el volumen total percibido constante durante la
+    // mezcla, sin el "hueco" que produce una rampa lineal a la mitad.
     const t0 = Date.now();
     if (fadeTimer) clearInterval(fadeTimer);
     fadeTimer = setInterval(() => {
@@ -313,9 +465,10 @@ function crossfadeTo(index, duration) {
             finalizeFade();
             return;
         }
+        const angle = p * (Math.PI / 2);
         try {
-            from.player.setVolume(Math.round(100 * (1 - p)));
-            to.player.setVolume(Math.round(100 * p));
+            from.player.setVolume(Math.round(100 * Math.cos(angle)));
+            to.player.setVolume(Math.round(100 * Math.sin(angle)));
         } catch (e) { /* ignorar si un deck no responde */ }
     }, 100);
 }
@@ -371,15 +524,20 @@ function playPrevTrack() {
 function startCheckInterval() {
     stopCheckInterval();
     checkInterval = setInterval(() => {
-        if (!isPlaying || crossfading) return;
+        if (!isPlaying) return;
         const deck = decks[activeDeckIdx];
         if (!deck.player || !deck.player.getCurrentTime) return;
         const tracks = djData.playlists[activePlaylist];
         if (!tracks) return;
         const track = tracks[djCurrentTrackIndex];
-        if (!track || !track.end) return;
+        if (!track) return;
 
         const currentTime = deck.player.getCurrentTime();
+        updateProgressUI(deck.player, track, currentTime);
+
+        if (crossfading) return; // ya hay una mezcla en curso, no disparar otra
+        if (!track.end) return;
+
         const fade = effectiveFade(track);
         // Arrancar la mezcla `fade` segundos antes del punto de salida
         if (currentTime >= track.end - Math.max(fade, 0.5)) {

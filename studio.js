@@ -160,27 +160,79 @@ function renderPlaylists() {
     renderTracks();
 }
 
+function moveTrack(index, direction) {
+    const tracks = djData.playlists[activePlaylist];
+    if (!tracks) return;
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= tracks.length) return;
+    const tmp = tracks[index];
+    tracks[index] = tracks[newIndex];
+    tracks[newIndex] = tmp;
+    saveData();
+    renderTracks();
+}
+
 function renderTracks() {
     trackList.innerHTML = '';
     const tracks = djData.playlists[activePlaylist] || [];
 
     tracks.forEach((track, index) => {
         const li = document.createElement('li');
-        
-        li.innerHTML = `
-            <div class="track-title">${track.title || "Pista " + (index+1)}</div>
-            <div class="track-meta">
-                <span>${formatTime(track.start)} - ${track.end ? formatTime(track.end) : 'Fin'}</span>
-                <button class="track-delete" title="Eliminar pista">Quitar</button>
-            </div>
-        `;
-        
-        li.querySelector('.track-delete').onclick = (e) => {
+
+        const title = document.createElement('div');
+        title.className = 'track-title';
+        title.textContent = track.title || "Pista " + (index + 1);
+
+        const meta = document.createElement('div');
+        meta.className = 'track-meta';
+
+        const range = document.createElement('span');
+        range.textContent = `${formatTime(track.start)} - ${track.end ? formatTime(track.end) : 'Fin'}`;
+        meta.appendChild(range);
+
+        if (unavailableVideoIds.has(track.videoId)) {
+            li.classList.add('track-unavailable');
+            const warn = document.createElement('span');
+            warn.className = 'track-unavailable-tag';
+            warn.textContent = '⚠️ no disponible';
+            meta.appendChild(warn);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'track-actions';
+
+        const upBtn = document.createElement('button');
+        upBtn.className = 'track-move-btn';
+        upBtn.textContent = '▲';
+        upBtn.title = 'Mover arriba';
+        upBtn.disabled = index === 0;
+        upBtn.onclick = (e) => { e.stopPropagation(); moveTrack(index, -1); };
+
+        const downBtn = document.createElement('button');
+        downBtn.className = 'track-move-btn';
+        downBtn.textContent = '▼';
+        downBtn.title = 'Mover abajo';
+        downBtn.disabled = index === tracks.length - 1;
+        downBtn.onclick = (e) => { e.stopPropagation(); moveTrack(index, 1); };
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'track-delete';
+        delBtn.title = 'Eliminar pista';
+        delBtn.textContent = 'Quitar';
+        delBtn.onclick = (e) => {
             e.stopPropagation();
             djData.playlists[activePlaylist].splice(index, 1);
             saveData();
             renderTracks();
         };
+
+        actions.appendChild(upBtn);
+        actions.appendChild(downBtn);
+        actions.appendChild(delBtn);
+        meta.appendChild(actions);
+
+        li.appendChild(title);
+        li.appendChild(meta);
 
         // Clicking a track in studio could theoretically load it back into the studio player
         li.onclick = () => {
@@ -368,6 +420,102 @@ if (crossfadeSlider) {
         const val = parseFloat(crossfadeSlider.value);
         crossfadeLabel.textContent = val.toFixed(1) + 's';
         saveCrossfade(val);
+    });
+}
+
+// =======================
+// BACKUP EN LA NUBE (GitHub Gist)
+// =======================
+// Usa un Personal Access Token de GitHub con permiso "gist" únicamente.
+// El token se guarda solo en localStorage de este navegador y nunca sale
+// de tu equipo salvo hacia api.github.com para leer/escribir el gist.
+
+const GIST_FILENAME = 'dj-youtube-backup.json';
+const ghTokenInput = document.getElementById('gh-token-input');
+const cloudStatus = document.getElementById('cloud-backup-status');
+const btnCloudBackup = document.getElementById('btn-cloud-backup');
+const btnCloudRestore = document.getElementById('btn-cloud-restore');
+
+if (ghTokenInput) {
+    ghTokenInput.value = localStorage.getItem('dj-gh-token') || '';
+    ghTokenInput.addEventListener('change', () => {
+        localStorage.setItem('dj-gh-token', ghTokenInput.value.trim());
+    });
+}
+
+function setCloudStatus(msg, isError) {
+    if (!cloudStatus) return;
+    cloudStatus.textContent = msg;
+    cloudStatus.style.color = isError ? 'var(--danger)' : 'var(--text-muted)';
+}
+
+if (btnCloudBackup) {
+    btnCloudBackup.addEventListener('click', async () => {
+        const token = (ghTokenInput.value || '').trim();
+        if (!token) {
+            setCloudStatus('Ingresa tu token de GitHub primero.', true);
+            return;
+        }
+        setCloudStatus('Guardando...');
+        try {
+            const gistId = localStorage.getItem('dj-gist-id');
+            const body = {
+                description: 'DJ YouTube - Backup de playlists',
+                public: false,
+                files: { [GIST_FILENAME]: { content: JSON.stringify(djData, null, 2) } }
+            };
+            const url = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
+            const method = gistId ? 'PATCH' : 'POST';
+            const resp = await fetch(url, {
+                method,
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            if (!resp.ok) throw new Error(`GitHub respondió ${resp.status}`);
+            const result = await resp.json();
+            localStorage.setItem('dj-gist-id', result.id);
+            localStorage.setItem('dj-gh-token', token);
+            setCloudStatus(`Guardado ✔️ (${new Date().toLocaleTimeString()})`);
+        } catch (e) {
+            setCloudStatus('Error al guardar: ' + e.message, true);
+        }
+    });
+}
+
+if (btnCloudRestore) {
+    btnCloudRestore.addEventListener('click', () => {
+        const token = (ghTokenInput.value || '').trim();
+        const gistId = localStorage.getItem('dj-gist-id');
+        if (!token || !gistId) {
+            setCloudStatus('Todavía no hay un backup en la nube vinculado a este navegador.', true);
+            return;
+        }
+        customConfirm("Restaurar Backup", "Esto reemplazará tus playlists actuales con las del backup en la nube. ¿Continuar?", async (agreed) => {
+            if (!agreed) return;
+            setCloudStatus('Restaurando...');
+            try {
+                const resp = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
+                });
+                if (!resp.ok) throw new Error(`GitHub respondió ${resp.status}`);
+                const gist = await resp.json();
+                const file = gist.files[GIST_FILENAME];
+                if (!file) throw new Error('Archivo de backup no encontrado en el gist.');
+                const imported = JSON.parse(file.content);
+                if (!imported || !imported.playlists) throw new Error('Estructura inválida.');
+                djData = imported;
+                saveData();
+                saveActivePlaylist(Object.keys(djData.playlists)[0] || "");
+                renderPlaylists();
+                setCloudStatus(`Restaurado ✔️ (${new Date().toLocaleTimeString()})`);
+            } catch (e) {
+                setCloudStatus('Error al restaurar: ' + e.message, true);
+            }
+        });
     });
 }
 
