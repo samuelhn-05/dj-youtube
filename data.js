@@ -27,6 +27,15 @@ function formatTime(seconds) {
     return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
+// Duración global del crossfade entre pistas (segundos). 0 = corte directo.
+let crossfadeDuration = parseFloat(localStorage.getItem('dj-crossfade'));
+if (isNaN(crossfadeDuration) || crossfadeDuration < 0) crossfadeDuration = 4;
+
+function saveCrossfade(seconds) {
+    crossfadeDuration = seconds;
+    localStorage.setItem('dj-crossfade', String(seconds));
+}
+
 // Global active element reference for syncing if needed
 let activePlaylist = localStorage.getItem('dj-active-playlist') || Object.keys(djData.playlists)[0] || "";
 

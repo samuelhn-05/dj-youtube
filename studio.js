@@ -353,5 +353,23 @@ document.getElementById('import-json').addEventListener('change', (e) => {
     reader.readAsText(file);
 });
 
+// =======================
+// CROSSFADE SETTING
+// =======================
+
+const crossfadeSlider = document.getElementById('studio-crossfade');
+const crossfadeLabel = document.getElementById('label-crossfade');
+
+if (crossfadeSlider) {
+    crossfadeSlider.value = crossfadeDuration;
+    crossfadeLabel.textContent = crossfadeDuration.toFixed(1) + 's';
+
+    crossfadeSlider.addEventListener('input', () => {
+        const val = parseFloat(crossfadeSlider.value);
+        crossfadeLabel.textContent = val.toFixed(1) + 's';
+        saveCrossfade(val);
+    });
+}
+
 // Init
 renderPlaylists();

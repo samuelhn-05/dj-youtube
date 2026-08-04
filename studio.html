@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=5">
+    <link rel="stylesheet" href="styles.css?v=6">
     <style>
         .page-switch-btn {
             display: inline-block;
@@ -121,6 +121,14 @@
                             <!-- Options injected -->
                         </select>
                         <button id="btn-save-track" class="action-btn">Guardar el Mix</button>
+                    </div>
+                </div>
+
+                <div class="studio-controls glass-panel">
+                    <div class="marker-group" style="flex: 1;">
+                        <label for="studio-crossfade" style="color: var(--text-muted); font-size: 0.85rem;">🎚️ Duración del Crossfade</label>
+                        <input type="range" id="studio-crossfade" min="0" max="10" step="0.5" style="width: 100%;">
+                        <span id="label-crossfade" class="cue-label">4.0s</span>
                     </div>
                 </div>
             </section>
