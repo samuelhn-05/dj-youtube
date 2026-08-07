@@ -311,6 +311,63 @@ body.sidebar-open .sidebar {
 }
 .sidebar-footer button:hover, .sidebar-footer .btn:hover { background: rgba(255,255,255,0.1); }
 
+/* Secciones colapsables del sidebar (Exportar/Importar, Backup) — cerradas
+   por defecto para que Listas/Pistas tengan todo el espacio disponible. */
+.sidebar-collapsible {
+    flex-shrink: 0;
+    border-top: 1px solid var(--panel-border);
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+.sidebar-collapsible summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 6px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    user-select: none;
+    transition: background 0.2s;
+}
+
+.sidebar-collapsible summary::-webkit-details-marker {
+    display: none;
+}
+
+.sidebar-collapsible summary::after {
+    content: '▸';
+    font-size: 0.9rem;
+    color: var(--accent-secondary);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.sidebar-collapsible[open] summary::after {
+    transform: rotate(90deg);
+}
+
+.sidebar-collapsible summary:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-main);
+}
+
+.sidebar-collapsible summary:focus-visible {
+    outline: 2px solid var(--accent-secondary);
+    outline-offset: 2px;
+    background: rgba(255,255,255,0.06);
+}
+
+.sidebar-collapsible .sidebar-footer {
+    margin-top: 10px;
+}
+
 
 /* 8. VIDEO PLAYER */
 .player-wrapper {
