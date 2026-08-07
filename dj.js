@@ -14,8 +14,8 @@ let consecutiveErrorSkips = 0;
 let wakeLock = null;
 
 const decks = [
-    { player: null, wrap: null, cuedIndex: null, cuedVideoId: null, muteGuardTimer: null },
-    { player: null, wrap: null, cuedIndex: null, cuedVideoId: null, muteGuardTimer: null }
+    { player: null, wrap: null, cuedIndex: null, cuedVideoId: null, muteGuardTimer: null, awaitingRealPlay: false },
+    { player: null, wrap: null, cuedIndex: null, cuedVideoId: null, muteGuardTimer: null, awaitingRealPlay: false }
 ];
 let activeDeckIdx = 0;
 
@@ -78,11 +78,15 @@ function onDeckStateChange(event) {
 
         // Confirmación real de reproducción: si estaba silenciado esperando
         // pasar un posible anuncio (los anuncios no disparan este evento),
-        // restaurar el volumen justo ahora.
+        // restaurar el volumen justo ahora (carga directa) o dejar que el
+        // ramp de la mezcla retome la curva normal (crossfade).
         const activeDeck = decks[activeDeckIdx];
         if (activeDeck.muteGuardTimer) {
             clearMuteGuard(activeDeck);
             try { activeDeck.player.setVolume(100); } catch (e) {}
+        }
+        if (activeDeck.awaitingRealPlay) {
+            activeDeck.awaitingRealPlay = false;
         }
     } else {
         isPlaying = false;
@@ -446,6 +450,12 @@ function crossfadeTo(index, duration) {
     try {
         to.player.unMute();
         to.player.setVolume(duration > 0 ? 0 : 100);
+        // Igual que en la carga directa: no confiar en que lo que empiece a
+        // sonar sea la pista real hasta que el propio reproductor confirme
+        // el evento PLAYING (los anuncios no lo disparan). Mientras tanto,
+        // el ramp de abajo mantiene este deck mudo sin alterar el reloj de
+        // la mezcla ni el fundido del deck saliente.
+        to.awaitingRealPlay = true;
         if (to.cuedIndex === index && to.cuedVideoId === track.videoId) {
             to.player.playVideo();
         } else {
@@ -504,7 +514,11 @@ function crossfadeTo(index, duration) {
         const angle = p * (Math.PI / 2);
         try {
             from.player.setVolume(Math.round(100 * Math.cos(angle)));
-            to.player.setVolume(Math.round(100 * Math.sin(angle)));
+            // Si todavía no se confirmó que el deck entrante arrancó de
+            // verdad (posible anuncio), lo mantenemos en 0 en vez de subirlo
+            // con la curva — el deck saliente sigue su fundido normal, así
+            // que el reloj de la mezcla no se toca.
+            to.player.setVolume(to.awaitingRealPlay ? 0 : Math.round(100 * Math.sin(angle)));
         } catch (e) { /* ignorar si un deck no responde */ }
     }, 100);
 }
@@ -524,9 +538,17 @@ function finalizeFade() {
         outgoing.player.stopVideo();
         outgoing.player.setVolume(100);
     } catch (e) {}
-    try {
-        incoming.player.setVolume(100);
-    } catch (e) {}
+
+    if (incoming.awaitingRealPlay) {
+        // El anuncio duró más que el crossfade completo: en vez de subir el
+        // volumen a ciegas (que sonaría el anuncio), lo dejamos mudo y
+        // reutilizamos la misma red de seguridad de la carga directa —
+        // se desmuta apenas confirme PLAYING real, o a los 45s como tope.
+        try { incoming.player.setVolume(0); } catch (e) {}
+        armMuteGuard(incoming);
+    } else {
+        try { incoming.player.setVolume(100); } catch (e) {}
+    }
 
     outgoing.wrap.style.transition = 'none';
     outgoing.wrap.style.opacity = '0';
