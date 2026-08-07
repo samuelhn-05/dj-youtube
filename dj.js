@@ -14,8 +14,8 @@ let consecutiveErrorSkips = 0;
 let wakeLock = null;
 
 const decks = [
-    { player: null, wrap: null, cuedIndex: null, cuedVideoId: null },
-    { player: null, wrap: null, cuedIndex: null, cuedVideoId: null }
+    { player: null, wrap: null, cuedIndex: null, cuedVideoId: null, muteGuardTimer: null },
+    { player: null, wrap: null, cuedIndex: null, cuedVideoId: null, muteGuardTimer: null }
 ];
 let activeDeckIdx = 0;
 
@@ -75,6 +75,15 @@ function onDeckStateChange(event) {
         updatePlayBtn();
         startCheckInterval();
         requestWakeLock();
+
+        // Confirmación real de reproducción: si estaba silenciado esperando
+        // pasar un posible anuncio (los anuncios no disparan este evento),
+        // restaurar el volumen justo ahora.
+        const activeDeck = decks[activeDeckIdx];
+        if (activeDeck.muteGuardTimer) {
+            clearMuteGuard(activeDeck);
+            try { activeDeck.player.setVolume(100); } catch (e) {}
+        }
     } else {
         isPlaying = false;
         updatePlayBtn();
@@ -147,8 +156,32 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // ─── MITIGACIÓN DE ANUNCIOS ──────────────────────────────────────────────────
-// La API de YouTube no expone si se está reproduciendo un anuncio. Como
-// mitigación práctica: si pedimos arrancar en startSeconds > 3s y poco
+// La API de YouTube no expone si se está reproduciendo un anuncio, pero se
+// observó algo útil: mientras el anuncio corre, el reproductor NO dispara el
+// evento "PLAYING" (por eso el botón de play/pausa se ve como si siguiera en
+// pausa durante el anuncio). Aprovechamos esa señal: al hacer una carga
+// directa, silenciamos el audio de entrada y solo lo restauramos cuando
+// confirmamos ese evento PLAYING real. Si hay anuncio, suena mudo mientras
+// dure (sin adivinar cuánto); si no hay anuncio, se desmuta casi al instante.
+function armMuteGuard(deckObj) {
+    clearMuteGuard(deckObj);
+    deckObj.muteGuardTimer = setTimeout(() => {
+        // Red de seguridad: si por algún motivo nunca llega el evento
+        // PLAYING (error, anuncio anormalmente largo), no dejar la pista
+        // muda para siempre.
+        try { deckObj.player.setVolume(100); } catch (e) {}
+        deckObj.muteGuardTimer = null;
+    }, 45000);
+}
+
+function clearMuteGuard(deckObj) {
+    if (deckObj.muteGuardTimer) {
+        clearTimeout(deckObj.muteGuardTimer);
+        deckObj.muteGuardTimer = null;
+    }
+}
+
+// Mitigación complementaria: si pedimos arrancar en startSeconds > 3s y poco
 // después el reproductor sigue cerca de 0, lo más probable es que un
 // anuncio esté ocupando el inicio — forzamos el salto al punto real.
 function scheduleAdGuard(deckObj, expectedStart) {
@@ -353,12 +386,15 @@ function hardLoadTrack(index) {
     const deck = decks[activeDeckIdx];
     if (!deck.player || !deck.player.loadVideoById) return;
     try {
-        deck.player.setVolume(100);
+        // Silenciado hasta confirmar reproducción real (filtra anuncios,
+        // ver armMuteGuard más abajo).
+        deck.player.setVolume(0);
         deck.player.loadVideoById({
             videoId: track.videoId,
             startSeconds: track.start,
             endSeconds: track.end
         });
+        armMuteGuard(deck);
         scheduleAdGuard(deck, track.start);
     } catch (e) { /* player aún no listo */ }
     preloadNext();
